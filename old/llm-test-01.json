@@ -1,0 +1,19 @@
+{
+  "task": "debug and resolve specific issues in code implementation",
+  "category": "technical",
+  "confidence": 0.95,
+  "format": "json",
+  "constraints": [
+    "under 300 words",
+    "professional tone",
+    "include examples"
+  ],
+  "complexity_level": "advanced",
+  "metadata": {
+    "version": "3.2",
+    "created_at": "2025-08-22T15:32:23.968493",
+    "quality_score": 69
+  },
+  "original_issue": "vague",
+  "enhancement_explanation": "Prompt lacks specific context and details"
+}

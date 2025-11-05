@@ -1,0 +1,165 @@
+global:
+  resolve_timeout: 5m
+  # SMTP configuration for email alerts (configure with your SMTP server)
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@yourcompany.com'
+  smtp_auth_username: 'alerts@yourcompany.com'
+  smtp_auth_password: 'your-app-password'
+  smtp_require_tls: true
+
+# Templates for alert notifications
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route alerts to different receivers based on labels
+route:
+  # Default receiver for all alerts
+  receiver: 'default'
+
+  # Group alerts by these labels
+  group_by: ['alertname', 'cluster', 'service']
+
+  # Wait time before sending first notification for a group
+  group_wait: 30s
+
+  # Wait time before sending another notification for new alerts in the same group
+  group_interval: 5m
+
+  # Minimum time between two notifications for the same group
+  repeat_interval: 4h
+
+  # Child routes for specific alert handling
+  routes:
+    # Critical alerts - page immediately
+    - match:
+        severity: critical
+      receiver: 'pager'
+      group_wait: 10s
+      repeat_interval: 1h
+      continue: true  # Also send to default receiver
+
+    # Warning alerts - send to email
+    - match:
+        severity: warning
+      receiver: 'email'
+      repeat_interval: 12h
+
+    # Info alerts - send to slack only
+    - match:
+        severity: info
+      receiver: 'slack'
+      repeat_interval: 24h
+
+    # Database alerts - send to DBA team
+    - match:
+        component: database
+      receiver: 'dba-team'
+      continue: true
+
+    # Security alerts - send to security team
+    - match:
+        component: security
+      receiver: 'security-team'
+      group_wait: 10s
+      repeat_interval: 30m
+      continue: true
+
+# Inhibition rules - prevent alert spam
+inhibit_rules:
+  # If APIDown is firing, don't alert on HighErrorRate
+  - source_match:
+      alertname: 'APIDown'
+    target_match:
+      alertname: 'APIHighErrorRate'
+    equal: ['cluster']
+
+  # If DatabaseDown is firing, don't alert on connection pool issues
+  - source_match:
+      alertname: 'DatabaseDown'
+    target_match:
+      alertname: 'DatabaseConnectionPoolExhaustion'
+    equal: ['cluster']
+
+  # If RedisDown is firing, don't alert on cache issues
+  - source_match:
+      alertname: 'RedisDown'
+    target_match_re:
+      alertname: '(LowCacheHitRate|CacheCompletelyEmpty)'
+    equal: ['cluster']
+
+# Receivers - where to send alerts
+receivers:
+  # Default receiver - logs only (for development)
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://api:8000/v1/internal/alerts/webhook'
+        send_resolved: true
+
+  # Pager for critical alerts (PagerDuty, Opsgenie, etc.)
+  - name: 'pager'
+    # PagerDuty configuration
+    pagerduty_configs:
+      - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY'
+        description: '{{ .GroupLabels.alertname }}: {{ .CommonAnnotations.summary }}'
+        details:
+          severity: '{{ .GroupLabels.severity }}'
+          description: '{{ .CommonAnnotations.description }}'
+          runbook: '{{ .CommonAnnotations.runbook }}'
+
+    # Also send to email
+    email_configs:
+      - to: 'oncall@yourcompany.com'
+        headers:
+          Subject: '[CRITICAL] {{ .GroupLabels.alertname }}'
+        html: '{{ template "email.default.html" . }}'
+
+  # Email receiver for warnings
+  - name: 'email'
+    email_configs:
+      - to: 'ops-team@yourcompany.com'
+        headers:
+          Subject: '[WARNING] {{ .GroupLabels.alertname }}'
+        html: '{{ template "email.default.html" . }}'
+
+  # Slack receiver for info alerts
+  - name: 'slack'
+    slack_configs:
+      - api_url: 'YOUR_SLACK_WEBHOOK_URL'
+        channel: '#alerts'
+        username: 'Prometheus Alert'
+        icon_emoji: ':prometheus:'
+        title: '{{ .GroupLabels.alertname }}'
+        text: |
+          *Summary:* {{ .CommonAnnotations.summary }}
+          *Description:* {{ .CommonAnnotations.description }}
+          *Severity:* {{ .GroupLabels.severity }}
+          *Runbook:* {{ .CommonAnnotations.runbook }}
+        send_resolved: true
+
+  # DBA team for database alerts
+  - name: 'dba-team'
+    email_configs:
+      - to: 'dba-team@yourcompany.com'
+        headers:
+          Subject: '[DATABASE] {{ .GroupLabels.alertname }}'
+        html: '{{ template "email.default.html" . }}'
+
+  # Security team for security alerts
+  - name: 'security-team'
+    email_configs:
+      - to: 'security@yourcompany.com'
+        headers:
+          Subject: '[SECURITY] {{ .GroupLabels.alertname }}'
+        html: '{{ template "email.default.html" . }}'
+    slack_configs:
+      - api_url: 'YOUR_SLACK_WEBHOOK_URL'
+        channel: '#security-alerts'
+        username: 'Security Alert'
+        icon_emoji: ':rotating_light:'
+        title: '{{ .GroupLabels.alertname }}'
+        text: |
+          *SECURITY ALERT*
+          *Summary:* {{ .CommonAnnotations.summary }}
+          *Description:* {{ .CommonAnnotations.description }}
+          *Runbook:* {{ .CommonAnnotations.runbook }}
+        send_resolved: true

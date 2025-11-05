@@ -1,0 +1,464 @@
+Complex & Ambiguous Prompts
+
+These prompts contain multiple steps, conflicting details, or vague language to test the model's ability to identify the primary intent and subject.
+
+    "Take our Q3 financial report (a PDF) and the latest marketing leads from our HubSpot CSV, figure out the ROI for the 'Summer Splash' campaign, and create a summary for the board meeting next Tuesday."
+   
+Output:    
+*********************************************************************************
+{
+  "intent": "analyze",
+  "subject": "ROI for the 'Summer Splash' campaign",
+  "entities": {
+    "key_details": [
+      "'Summer Splash' campaign",
+      "for the board meeting next Tuesday"
+    ],
+    "source": "Q3 financial report (a PDF) and the latest marketing leads from our HubSpot CSV",
+    "target": "a summary for the board meeting"
+  },
+  "output_format": "a summary",
+  "original_language": "en"
+}
+
+
+*********************************************************************************
+
+    "I need to understand customer churn. Look at support ticket logs, user activity data from the last 6 months, and subscription history, then identify the top 3 predictors of an account cancellation."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "analyze",
+  "subject": "customer churn",
+  "entities": {
+    "key_details": [
+      "last 6 months",
+      "top 3 predictors"
+    ],
+    "source": "support ticket logs, user activity data, subscription history",
+    "target": "predictors of an account cancellation"
+  },
+  "output_format": "a list of the top 3 predictors",
+  "original_language": "en"
+}
+
+
+*********************************************************************************
+
+    "We have three versions of a landing page design. I need to know which one is better. Use the user engagement metrics from Google Analytics and generate a report, but don't just give me numbers, explain the 'why'."
+
+
+Output:    
+*********************************************************************************
+"We have three versions of a landing page design. I need to know which one is better. Use the user engagement metrics from Google Analytics and generate a report, but don't just give me numbers, explain the 'why'."
+
+*********************************************************************************
+
+
+
+    "Draft an email to our enterprise clients about the upcoming server maintenance, but make it sound less technical. Mention the downtime is Saturday at 2 AM EST but assure them that all data is secure. The goal is to prevent a flood of support tickets."
+
+
+Output:    
+*********************************************************************************
+{
+  "intent": "create",
+  "subject": "an email",
+  "entities": {
+    "key_details": [
+      "Addressed to enterprise clients",
+      "Topic is upcoming server maintenance",
+      "Tone should be less technical",
+      "Downtime is Saturday at 2 AM EST",
+      "Assure them that all data is secure"
+    ],
+    "source": null,
+    "target": "prevent a flood of support tickets"
+  },
+  "output_format": "email",
+  "original_language": "en"
+}
+*********************************************************************************
+
+
+Implicit & Conversational Prompts
+These prompts hide the core request in conversational language, forcing the model to infer the user's goal without explicit action words.
+
+
+    "Okay, so I have this massive server log file from last night. It's a total mess. What exactly happened around 3:15 AM that caused the CPU to spike?"
+
+Output:    
+*********************************************************************************
+{
+  "intent": "analyze",
+  "subject": "server log file",
+  "entities": {
+    "key_details": [
+      "event occurred around 3:15 AM",
+      "event caused the CPU to spike",
+      "log is from last night"
+    ],
+    "source": "massive server log file",
+    "target": "the cause of the CPU spike"
+  },
+  "output_format": "a natural language explanation",
+  "original_language": "en"
+}
+
+*********************************************************************************
+
+
+    "My Python script for web scraping keeps failing with a 403 error. It uses the requests and BeautifulSoup libraries to get data from example.com. What am I doing wrong?"
+
+Output:    
+*********************************************************************************
+{
+  "intent": "analyze",
+  "subject": "a Python web scraping script",
+  "entities": {
+    "key_details": [
+      "failing with a 403 error",
+      "uses requests and BeautifulSoup libraries"
+    ],
+    "source": "example.com",
+    "target": "an explanation for the error"
+  },
+  "output_format": "an explanation",
+  "original_language": "en"
+}
+*********************************************************************************
+
+    "I'm looking at our competitor's new app. Can you find their privacy policy, terms of service, and any recent news articles about them from the last month and just boil it all down for me?"
+
+Output:    
+*********************************************************************************
+{
+  "intent": "analyze",
+  "subject": "competitor's new app",
+  "entities": {
+    "key_details": [
+      "privacy policy",
+      "terms of service",
+      "recent news articles from the last month"
+    ],
+    "source": "competitor's new app and news articles",
+    "target": "a summary of the findings"
+  },
+  "output_format": "a summary",
+  "original_language": "en"
+}
+
+
+*********************************************************************************
+
+
+    "I have a folder full of disorganized photos from a vacation. I need a way to automatically sort them into subfolders based on the city they were taken in."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "sort",
+  "subject": "photos",
+  "entities": {
+    "key_details": [
+      "disorganized",
+      "from a vacation",
+      "automatically",
+      "based on the city they were taken in"
+    ],
+    "source": "a folder",
+    "target": "subfolders"
+  },
+  "output_format": "a method",
+  "original_language": "en"
+}
+*********************************************************************************
+
+
+
+Multilingual & Mixed-Language Prompts
+
+These test the model's ability to handle multiple languages, including detecting the original language while processing instructions or entities in another.
+
+
+
+    "Prendi questo testo in italiano: 'L'intelligenza artificiale sta cambiando il mondo.' Translate it to Japanese, and give me a fichier audio of the result in a female voice."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "translate",
+  "subject": "a text",
+  "entities": {
+    "key_details": [
+      "in a female voice"
+    ],
+    "source": "L'intelligenza artificiale sta cambiando il mondo.",
+    "target": "Japanese"
+  },
+  "output_format": "audio file",
+  "original_language": "en"
+}
+
+
+*********************************************************************************
+
+    "I have a product review written in Spanish. Perform sentiment analysis on it, extract the key complaints, and then summarize those complaints for me in English."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "analyze",
+  "subject": "a product review",
+  "entities": {
+    "key_details": [
+      "perform sentiment analysis",
+      "extract the key complaints"
+    ],
+    "source": "a product review written in Spanish",
+    "target": "summarize complaints in English"
+  },
+  "output_format": "summary",
+  "original_language": "en"
+}
+
+
+*********************************************************************************
+
+    "Draft a response in German to a customer inquiry that was written in French. The original French question is: 'Quand mon colis arrivera-t-il?' Use our standard shipping ETA of 5-7 business days."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "draft",
+  "subject": "a customer response",
+  "entities": {
+    "key_details": [
+      "The original French question is: 'Quand mon colis arrivera-t-il?'",
+      "Use our standard shipping ETA of 5-7 business days."
+    ],
+    "source": "a customer inquiry in French",
+    "target": "a response in German"
+  },
+  "output_format": "German text",
+  "original_language": "en"
+}
+
+
+*********************************************************************************
+
+
+    "Create a list of keywords for an SEO campaign targeting a French-speaking audience in Canada. The main product is 'sustainable coffee beans'."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "create",
+  "subject": "a list of keywords",
+  "entities": {
+    "key_details": [
+      "SEO campaign",
+      "French-speaking audience in Canada",
+      "sustainable coffee beans"
+    ],
+    "source": null,
+    "target": "SEO campaign"
+  },
+  "output_format": "a list of keywords",
+  "original_language": "en"
+}
+
+
+*********************************************************************************
+
+
+
+Highly Technical & Domain-Specific Prompts
+
+These use jargon from specific fields to test if the model can parse the structure of the request even if it doesn't fully understand the technical details.
+
+    (Software Engineering): "Generate a Dockerfile for a Node.js application that uses Express. It needs to be a multi-stage build, copying over package.json first to cache dependencies, and it should run on port 8080."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "create",
+  "subject": "a Dockerfile",
+  "entities": {
+    "key_details": [
+      "for a Node.js application",
+      "uses Express",
+      "multi-stage build",
+      "copy package.json first to cache dependencies",
+      "run on port 8080"
+    ],
+    "source": "Node.js application",
+    "target": null
+  },
+  "output_format": "Dockerfile",
+  "original_language": "en"
+}
+*********************************************************************************
+
+
+
+    (Finance): "Calculate the Sharpe ratio for a portfolio with a 12% annual return, a standard deviation of 18%, assuming a risk-free rate of 4.5%."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "calculate",
+  "subject": "the Sharpe ratio for a portfolio",
+  "entities": {
+    "key_details": [
+      "12% annual return",
+      "standard deviation of 18%",
+      "risk-free rate of 4.5%"
+    ],
+    "source": "a portfolio",
+    "target": null
+  },
+  "output_format": "numerical value",
+  "original_language": "en"
+}
+*********************************************************************************
+
+    (Bioinformatics): "Given a DNA sequence in a FASTA file, find all open reading frames (ORFs) that are at least 50 codons long and write them to a new file."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "find",
+  "subject": "open reading frames",
+  "entities": {
+    "key_details": [
+      "at least 50 codons long"
+    ],
+    "source": "a FASTA file",
+    "target": "a new file"
+  },
+  "output_format": "a new file",
+  "original_language": "en"
+}
+
+*********************************************************************************
+
+
+
+    (Legal): "Summarize the key liabilities and indemnification clauses from the attached Master Service Agreement (MSA) document into five bullet points."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "summarize",
+  "subject": "key liabilities and indemnification clauses",
+  "entities": {
+    "key_details": [],
+    "source": "the attached Master Service Agreement (MSA) document",
+    "target": null
+  },
+  "output_format": "five bullet points",
+  "original_language": "en"
+}
+
+
+*********************************************************************************
+
+
+Creative & Abstract Prompts
+
+These prompts don't have a clear "data in, data out" structure, testing the model's ability to handle requests for creative generation.
+
+    "Write a short, melancholic poem about a forgotten database, in the style of Edgar Allan Poe."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "create",
+  "subject": "a poem",
+  "entities": {
+    "key_details": [
+      "short",
+      "melancholic",
+      "about a forgotten database",
+      "in the style of Edgar Allan Poe"
+    ],
+    "source": null,
+    "target": null
+  },
+  "output_format": "poem",
+  "original_language": "en"
+}
+*********************************************************************************
+
+
+    "Generate three startup ideas based on the concept of 'AI for personal wellness.' For each idea, provide a one-sentence pitch and a target audience."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "create",
+  "subject": "startup ideas",
+  "entities": {
+    "key_details": [
+      "three ideas",
+      "based on 'AI for personal wellness'",
+      "each idea must include a one-sentence pitch",
+      "each idea must include a target audience"
+    ],
+    "source": null,
+    "target": null
+  },
+  "output_format": "A list of ideas with a pitch and target audience for each.",
+  "original_language": "en"
+}
+
+*********************************************************************************
+
+    "Create a recipe for a vegan pasta dish that is both gluten-free and has at least 20 grams of protein per serving."
+
+Output:    
+*********************************************************************************
+{
+  "intent": "create",
+  "subject": "a recipe for a vegan pasta dish",
+  "entities": {
+    "key_details": [
+      "vegan",
+      "gluten-free",
+      "at least 20 grams of protein per serving"
+    ],
+    "source": null,
+    "target": null
+  },
+  "output_format": "a recipe",
+  "original_language": "en"
+}
+
+
+*********************************************************************************
+
+    "Describe a painting of a futuristic city at sunset, focusing on the colors and the feeling of optimistic loneliness."
+   
+ Output:    
+*********************************************************************************
+{
+  "intent": "describe",
+  "subject": "a painting",
+  "entities": {
+    "key_details": [
+      "futuristic city",
+      "at sunset",
+      "focus on the colors",
+      "feeling of optimistic loneliness"
+    ],
+    "source": null,
+    "target": null
+  },
+  "output_format": "textual description",
+  "original_language": "en"
+}
+
+
+*********************************************************************************

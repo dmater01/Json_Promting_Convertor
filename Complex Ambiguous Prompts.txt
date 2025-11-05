@@ -1,0 +1,202 @@
+Complex & Ambiguous Prompts
+
+These prompts contain multiple steps, conflicting details, or vague language to test the model's ability to identify the primary intent and subject.
+
+    "Take our Q3 financial report (a PDF) and the latest marketing leads from our HubSpot CSV, figure out the ROI for the 'Summer Splash' campaign, and create a summary for the board meeting next Tuesday."
+   
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+    "I need to understand customer churn. Look at support ticket logs, user activity data from the last 6 months, and subscription history, then identify the top 3 predictors of an account cancellation."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+    "We have three versions of a landing page design. I need to know which one is better. Use the user engagement metrics from Google Analytics and generate a report, but don't just give me numbers, explain the 'why'."
+
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+    "Draft an email to our enterprise clients about the upcoming server maintenance, but make it sound less technical. Mention the downtime is Saturday at 2 AM EST but assure them that all data is secure. The goal is to prevent a flood of support tickets."
+
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+Implicit & Conversational Prompts
+
+These prompts hide the core request in conversational language, forcing the model to infer the user's goal without explicit action words.
+
+    "Okay, so I have this massive server log file from last night. It's a total mess. What exactly happened around 3:15 AM that caused the CPU to spike?"
+
+    "My Python script for web scraping keeps failing with a 403 error. It uses the requests and BeautifulSoup libraries to get data from example.com. What am I doing wrong?"
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+
+    "I'm looking at our competitor's new app. Can you find their privacy policy, terms of service, and any recent news articles about them from the last month and just boil it all down for me?"
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+
+    "I have a folder full of disorganized photos from a vacation. I need a way to automatically sort them into subfolders based on the city they were taken in."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+Multilingual & Mixed-Language Prompts
+
+These test the model's ability to handle multiple languages, including detecting the original language while processing instructions or entities in another.
+
+    "Prendi questo testo in italiano: 'L'intelligenza artificiale sta cambiando il mondo.' Translate it to Japanese, and give me a fichier audio of the result in a female voice."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+    "I have a product review written in Spanish. Perform sentiment analysis on it, extract the key complaints, and then summarize those complaints for me in English."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+
+    "Draft a response in German to a customer inquiry that was written in French. The original French question is: 'Quand mon colis arrivera-t-il?' Use our standard shipping ETA of 5-7 business days."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+    "Create a list of keywords for an SEO campaign targeting a French-speaking audience in Canada. The main product is 'sustainable coffee beans'."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+Highly Technical & Domain-Specific Prompts
+
+These use jargon from specific fields to test if the model can parse the structure of the request even if it doesn't fully understand the technical details.
+
+    (Software Engineering): "Generate a Dockerfile for a Node.js application that uses Express. It needs to be a multi-stage build, copying over package.json first to cache dependencies, and it should run on port 8080."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+    (Finance): "Calculate the Sharpe ratio for a portfolio with a 12% annual return, a standard deviation of 18%, assuming a risk-free rate of 4.5%."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+    (Bioinformatics): "Given a DNA sequence in a FASTA file, find all open reading frames (ORFs) that are at least 50 codons long and write them to a new file."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+    (Legal): "Summarize the key liabilities and indemnification clauses from the attached Master Service Agreement (MSA) document into five bullet points."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+Creative & Abstract Prompts
+
+These prompts don't have a clear "data in, data out" structure, testing the model's ability to handle requests for creative generation.
+
+    "Write a short, melancholic poem about a forgotten database, in the style of Edgar Allan Poe."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+    "Generate three startup ideas based on the concept of 'AI for personal wellness.' For each idea, provide a one-sentence pitch and a target audience."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+    "Create a recipe for a vegan pasta dish that is both gluten-free and has at least 20 grams of protein per serving."
+
+Output:    
+*********************************************************************************
+
+
+*********************************************************************************
+
+
+
+    "Describe a painting of a futuristic city at sunset, focusing on the colors and the feeling of optimistic loneliness."
+   
+ Output:    
+*********************************************************************************
+
+
+*********************************************************************************

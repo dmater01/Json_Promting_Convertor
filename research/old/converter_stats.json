@@ -1,0 +1,12 @@
+{
+  "total_prompts": 1,
+  "category_counts": {
+    "creative": 1
+  },
+  "quality_scores": [
+    55
+  ],
+  "files_saved": 1,
+  "most_common_category": "creative",
+  "avg_quality_score": 55.0
+}

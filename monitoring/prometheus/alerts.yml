@@ -1,0 +1,305 @@
+groups:
+  - name: api_alerts
+    interval: 30s
+    rules:
+      # ============================================
+      # CRITICAL ALERTS (Page immediately)
+      # ============================================
+
+      - alert: APIHighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total[5m]))
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "High API error rate detected"
+          description: "API error rate is {{ $value | humanizePercentage }} (threshold: 5%). Check application logs immediately."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-HighErrorRate"
+
+      - alert: APIDown
+        expr: up{job="api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "API service is down"
+          description: "API service has been down for more than 1 minute. Immediate action required."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-APIDown"
+
+      - alert: DatabaseDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "PostgreSQL database is down"
+          description: "Database has been unreachable for more than 1 minute. Check database health immediately."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-DatabaseDown"
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: cache
+        annotations:
+          summary: "Redis cache is down"
+          description: "Redis has been unreachable for more than 1 minute. Caching unavailable."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-RedisDown"
+
+      - alert: HighLatencyP95
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+          ) > 60
+        for: 5m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "Extremely high API latency (P95)"
+          description: "95th percentile latency is {{ $value }}s (threshold: 60s). Performance degradation detected."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-HighLatency"
+
+      # ============================================
+      # WARNING ALERTS (Investigate soon)
+      # ============================================
+
+      - alert: APIHighLatencyP95
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+          ) > 30
+        for: 10m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High API latency detected (P95)"
+          description: "95th percentile latency is {{ $value }}s (threshold: 30s). Investigate performance issues."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-HighLatency"
+
+      - alert: LowCacheHitRate
+        expr: |
+          (
+            sum(rate(cache_hits_total[10m]))
+            /
+            (sum(rate(cache_hits_total[10m])) + sum(rate(cache_misses_total[10m])))
+          ) < 0.05
+        for: 15m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is {{ $value | humanizePercentage }} (threshold: 5%). Check cache configuration and expiration settings."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-LowCacheHitRate"
+
+      - alert: HighRateLimitViolations
+        expr: sum(rate(http_requests_total{status="429"}[5m])) > 10
+        for: 10m
+        labels:
+          severity: warning
+          component: ratelimit
+        annotations:
+          summary: "High rate of rate limit violations"
+          description: "{{ $value }} rate limit violations per second. Users may be hitting limits frequently."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-HighRateLimitViolations"
+
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes
+          ) / node_memory_MemTotal_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage on host"
+          description: "Memory usage is {{ $value | humanizePercentage }} (threshold: 85%). Consider scaling up."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-HighMemoryUsage"
+
+      - alert: HighCPUUsage
+        expr: |
+          100 - (
+            avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100
+          ) > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage on host"
+          description: "CPU usage is {{ $value }}% (threshold: 80%). Check for resource-intensive operations."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-HighCPUUsage"
+
+      - alert: DatabaseConnectionPoolExhaustion
+        expr: |
+          (
+            pg_stat_activity_count
+            /
+            pg_settings_max_connections
+          ) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database connection pool nearing exhaustion"
+          description: "Database connections at {{ $value | humanizePercentage }} of max. Consider increasing pool size."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-ConnectionPoolExhaustion"
+
+      # ============================================
+      # INFO ALERTS (Awareness)
+      # ============================================
+
+      - alert: LLMProviderSlowdown
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(llm_request_duration_seconds_bucket[10m])) by (le, provider)
+          ) > 45
+        for: 15m
+        labels:
+          severity: info
+          component: llm
+        annotations:
+          summary: "LLM provider {{ $labels.provider }} responding slowly"
+          description: "{{ $labels.provider }} P95 latency is {{ $value }}s (threshold: 45s). Provider may be experiencing issues."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-LLMProviderSlowdown"
+
+      - alert: HighDiskUsage
+        expr: |
+          (
+            node_filesystem_avail_bytes{mountpoint="/"}
+            /
+            node_filesystem_size_bytes{mountpoint="/"}
+          ) < 0.15
+        for: 10m
+        labels:
+          severity: info
+          component: system
+        annotations:
+          summary: "Low disk space available"
+          description: "Disk usage is {{ $value | humanizePercentage }} free (threshold: 15%). Plan for cleanup or expansion."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-HighDiskUsage"
+
+      - alert: UnusualTrafficSpike
+        expr: |
+          sum(rate(http_requests_total[5m]))
+          >
+          (
+            avg_over_time(sum(rate(http_requests_total[5m]))[1h:5m]) * 3
+          )
+        for: 5m
+        labels:
+          severity: info
+          component: api
+        annotations:
+          summary: "Unusual traffic spike detected"
+          description: "Request rate is {{ $value }}x normal levels. Monitor for potential DDoS or legitimate traffic surge."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-TrafficSpike"
+
+      # ============================================
+      # AUTHENTICATION & SECURITY
+      # ============================================
+
+      - alert: HighAuthenticationFailureRate
+        expr: |
+          sum(rate(http_requests_total{status="401"}[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value }} authentication failures per second. Possible brute force attack."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-HighAuthFailures"
+
+      - alert: SuspiciousIPActivity
+        expr: |
+          count by (ip) (
+            rate(http_requests_total{status="401"}[5m]) > 1
+          ) > 10
+        for: 10m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Suspicious activity from multiple IPs"
+          description: "{{ $value }} IPs showing high authentication failure rates. Investigate for coordinated attack."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-SuspiciousIPActivity"
+
+      # ============================================
+      # BUSINESS METRICS
+      # ============================================
+
+      - alert: NoRecentRequests
+        expr: |
+          sum(rate(http_requests_total{handler=~".*analyze.*"}[10m])) == 0
+        for: 30m
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "No API requests received recently"
+          description: "No analyze requests in the last 30 minutes. Verify service availability and user activity."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-NoRecentRequests"
+
+      - alert: CacheCompletelyEmpty
+        expr: cache_entries_total == 0
+        for: 15m
+        labels:
+          severity: info
+          component: cache
+        annotations:
+          summary: "Cache is completely empty"
+          description: "Redis cache has no entries. Verify cache is working correctly."
+          runbook: "https://github.com/yourusername/structured-prompt-service/wiki/Runbook-CacheEmpty"
+
+  # ============================================
+  # RECORDING RULES (Pre-computed metrics)
+  # ============================================
+
+  - name: recording_rules
+    interval: 30s
+    rules:
+      # Request rate by status
+      - record: api:http_requests:rate5m
+        expr: sum(rate(http_requests_total[5m])) by (status, handler)
+
+      # Error rate
+      - record: api:http_requests:error_rate5m
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m]))
+          /
+          sum(rate(http_requests_total[5m]))
+
+      # Cache hit rate
+      - record: cache:hit_rate5m
+        expr: |
+          sum(rate(cache_hits_total[5m]))
+          /
+          (sum(rate(cache_hits_total[5m])) + sum(rate(cache_misses_total[5m])))
+
+      # P95 latency
+      - record: api:http_request_duration:p95
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+          )
+
+      # P99 latency
+      - record: api:http_request_duration:p99
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+          )
